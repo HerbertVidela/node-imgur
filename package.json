@@ -31,15 +31,14 @@
   },
   "devDependencies": {
     "@spotify/polly-jest-presets": "^1.0.0",
-    "@spotify/web-scripts": "^1.1.4",
-    "@types/form-data": "^2.5.0",
+    "@spotify/web-scripts": "3.0.0",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.13.4",
     "@types/node-fetch": "^2.5.0",
     "husky": "^3.0.1"
   },
   "dependencies": {
-    "form-data": "^2.5.0",
+    "form-data": "^3.0.0",
     "node-fetch": "^2.6.0"
   },
   "husky": {

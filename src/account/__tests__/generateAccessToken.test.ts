@@ -1,32 +1,43 @@
 import { generateAccessToken } from '../index';
-import { ACCESS_TOKEN_URI } from '../../endpoints';
+import { Client } from '../../client';
+import {
+  RefreshTokenResponse,
+  InvalidRefreshTokenResponse,
+} from '../../responses';
 
-const mockPost = jest.fn();
-const MockClient = jest.fn().mockImplementation(() => {
-  return {
-    post: mockPost,
-  };
-});
+describe('generateAccessToken', () => {
+  let client: Client;
 
-beforeEach(() => {
-  MockClient.mockClear();
-  mockPost.mockClear();
-});
+  beforeAll(() => {
+    client = new Client({ client_id: process.env.CLIENT_ID });
+  });
 
-test('getAccessToken calls the correct endpoint and resolves', () => {
-  const body = {
-    refresh_token: 'myRefreshToken',
-    client_id: 'myId',
-    client_secret: 'mySecret',
-    grant_type: 'refresh_token',
-  };
+  it('should genereate the access token successfully when the body has correct keys', async () => {
+    const body = {
+      refresh_token: process.env.REFRESH_TOKEN || '',
+      client_id: process.env.CLIENT_ID || '',
+      client_secret: process.env.CLIENT_SECRET || '',
+    };
+    const resp = await generateAccessToken(client, body);
+    const {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    } = resp as RefreshTokenResponse;
 
-  const mockResponse = '{"success":true}';
-  mockPost.mockReturnValueOnce(Promise.resolve(mockResponse));
+    expect(accessToken).toBeTruthy();
+    expect(refreshToken).toBeTruthy();
+  });
 
-  const promiseResponse = generateAccessToken(new MockClient(), body);
+  it('should fail to generate the access token when the body has any incorrect key', async () => {
+    const body = {
+      refresh_token: `123`,
+      client_id: '',
+      client_secret: '',
+    };
+    const resp = await generateAccessToken(client, body);
+    const { status, success } = resp as InvalidRefreshTokenResponse;
 
-  expect(promiseResponse).resolves.toBe(mockResponse);
-  expect(mockPost).toHaveBeenCalledTimes(1);
-  expect(mockPost).toHaveBeenCalledWith(ACCESS_TOKEN_URI, body);
+    expect(status).toBe(400);
+    expect(success).toBeFalsy();
+  });
 });

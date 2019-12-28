@@ -1,25 +1,19 @@
 import { getSettings } from '../getSettings';
-import { ACCOUNT_SETTINGS } from '../../endpoints';
+import { Client } from '../../client';
 
-const mockGet = jest.fn();
-const mockClient = jest.fn().mockImplementation(() => {
-  return {
-    get: mockGet,
-  };
-});
+describe('getSettings', () => {
+  it('should get the account settings successfully when the access token is valid', async () => {
+    const client = new Client({ access_token: process.env.ACCESS_TOKEN });
+    const resp = await getSettings(client);
 
-beforeEach(() => {
-  mockClient.mockClear();
-  mockGet.mockClear();
-});
+    expect(resp.status).toEqual(200);
+  });
 
-test('getAccessToken calls the correct endpoint and resolves', () => {
-  const mockResponse = '{"success":true}';
-  mockGet.mockReturnValueOnce(Promise.resolve(mockResponse));
+  it('should fail to get the account settings when the access token is invalid', async () => {
+    const client = new Client({ access_token: 'asdf' });
+    const resp = await getSettings(client);
 
-  const promiseResponse = getSettings(new mockClient());
-
-  expect(promiseResponse).resolves.toBe(mockResponse);
-  expect(mockGet).toHaveBeenCalledTimes(1);
-  expect(mockGet).toHaveBeenCalledWith(ACCOUNT_SETTINGS);
+    expect(resp.status).toEqual(403);
+    expect(resp.success).toBeFalsy();
+  });
 });

@@ -16,6 +16,11 @@ export type AuthenticationRequiredResponse = ImgurApiResponse & {
   status: 401;
 };
 
+export type InvalidAccessTokenResponse = ImgurApiResponse & {
+  success: boolean;
+  status: 403;
+};
+
 export type RefreshTokenResponse = {
   access_token: string;
   expires_in: number;
@@ -56,6 +61,28 @@ export type UploadSuccessResponse = ImgurApiResponse & {
     deletehash: string;
     name: string;
     link: string;
+  };
+  success: true;
+  status: 200;
+};
+
+export type GetSettingsResponse = ImgurApiResponse & {
+  data: {
+    account_url: string;
+    email: string;
+    avatar: string;
+    cover: string;
+    public_images: boolean;
+    album_privacy: string;
+    pro_expiration: boolean;
+    accepted_gallery_terms: boolean;
+    active_emails: string[];
+    messaging_enabled: boolean;
+    comment_replies: boolean;
+    blocked_users: string[];
+    show_mature: boolean;
+    newsletter_subscribed: boolean;
+    first_party: boolean;
   };
   success: true;
   status: 200;
